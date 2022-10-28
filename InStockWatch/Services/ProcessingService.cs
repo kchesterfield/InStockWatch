@@ -30,7 +30,7 @@ namespace InStockWatch.Services
                 nameof(ProcessingService),
                 DateTime.Now.ToString());
 
-            CheckItems(cancellationToken);
+            CheckProducts(cancellationToken);
 
             hostApplicationLifetime.StopApplication();
 
@@ -47,12 +47,12 @@ namespace InStockWatch.Services
             return Task.CompletedTask;
         }
 
-        private Task CheckItems(CancellationToken cancellationToken)
+        private Task CheckProducts(CancellationToken cancellationToken)
         {
             while(!cancellationToken.IsCancellationRequested)
             {
                 logger.LogInformation(
-                    @"{0} creating a new scope and checking items at {1}",
+                    @"{0} creating a new scope and checking products at {1}",
                     nameof(ProcessingService),
                     DateTime.Now.ToString());
 
@@ -72,7 +72,7 @@ namespace InStockWatch.Services
                 if (products == null || products.Count == 0)
                 {
                     logger.LogError(
-                        @"{0} incurred an error: The list of items to check is null or zero ",
+                        @"{0} incurred an error: The list of products to check is null or zero ",
                         nameof(ProcessingService));
                     return Task.CompletedTask;
                 }

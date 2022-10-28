@@ -21,7 +21,7 @@ namespace InStockWatch.Services
     {
         private readonly ILogger logger;
         private readonly IWebDriver webDriver;
-        private readonly CheckProductServiceOptions options;
+        private readonly IConfiguration configuration;
         private readonly INotificationService notificationService;
 
         public CheckProductService(
@@ -31,9 +31,7 @@ namespace InStockWatch.Services
         {
             this.logger = logger;
             this.notificationService = notificationService;
-            options = configuration
-                .GetSection(nameof(CheckProductService))
-                .Get<CheckProductServiceOptions>();
+            this.configuration = configuration;
             webDriver = GetWebDriver();
         }
 
@@ -84,6 +82,10 @@ namespace InStockWatch.Services
         // ToDo: Move to its own service
         private IWebDriver GetWebDriver()
         {
+            var options = configuration
+                .GetSection(nameof(CheckProductService))
+                .Get<CheckProductServiceOptions>();
+
             // Find any GeckoDriver processes
             var geckoProcesses = Process
                 .GetProcesses()

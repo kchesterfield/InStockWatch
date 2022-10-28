@@ -17,7 +17,6 @@ namespace InStockWatch.Services
     {
         private readonly ILogger logger;
         private readonly IConfiguration configuration;
-        private readonly NotificationServiceOptions options;
 
         public NotificationService(
             IConfiguration configuration,
@@ -25,9 +24,6 @@ namespace InStockWatch.Services
         {
             this.logger = logger;
             this.configuration = configuration;
-            options = configuration
-                .GetSection("NotificationService")
-                .Get<NotificationServiceOptions>();
         }
 
         public void SendNotification(Product product)
@@ -44,9 +40,12 @@ namespace InStockWatch.Services
         // ToDo: Move to its own service
         private void SendEmail(Product product)
         {
+            var options = configuration
+                .GetSection("NotificationService")
+                .Get<NotificationServiceOptions>();
+
             var senderEmail = options.SenderEmail;
             var senderPassword = configuration[$"{nameof(NotificationService)}:SenderPassword"];
-
             var receiverEmail = options.ReceiverEmail;
 
             var smtpClient = new SmtpClient("smtp.gmail.com")
