@@ -41,6 +41,7 @@ namespace InStockWatch.Services
             SendEmail(product);
         }
 
+        // ToDo: Move to its own service
         private void SendEmail(Product product)
         {
             var senderEmail = options.SenderEmail;
