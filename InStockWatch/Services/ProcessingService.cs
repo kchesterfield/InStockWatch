@@ -9,28 +9,40 @@ namespace InStockWatch.Services
 {
     public class ProcessingService : IHostedService
     {
-        private readonly ILogger _logger;
+        private readonly IHostApplicationLifetime hostApplicationLifetime;
+        private readonly IServiceProvider serviceProvider;
+        private readonly ILogger logger;
 
         public ProcessingService(
+            IHostApplicationLifetime hostApplicationLifetime,
             IServiceProvider serviceProvider,
             ILogger<ProcessingService> logger)
         {
-            ServiceProvider = serviceProvider;
-            _logger = logger;
+            this.hostApplicationLifetime = hostApplicationLifetime;
+            this.serviceProvider = serviceProvider;
+            this.logger = logger;
         }
 
-        public IServiceProvider ServiceProvider { get; }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug(@"{0} has started at {1}", nameof(ProcessingService), DateTime.Now.ToString());
+            logger.LogInformation(
+                @"{0} has started at {1}",
+                nameof(ProcessingService),
+                DateTime.Now.ToString());
 
-            await CheckItems(cancellationToken);
+            CheckItems(cancellationToken);
+
+            hostApplicationLifetime.StopApplication();
+
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug(@"{0} has stopped at {1}", nameof(ProcessingService), DateTime.Now.ToString());
+            logger.LogInformation(
+                @"{0} has stopped at {1}",
+                nameof(ProcessingService),
+                DateTime.Now.ToString());
 
             return Task.CompletedTask;
         }
@@ -39,34 +51,59 @@ namespace InStockWatch.Services
         {
             while(!cancellationToken.IsCancellationRequested)
             {
-                using var scope = ServiceProvider.CreateScope();
+                logger.LogInformation(
+                    @"{0} creating a new scope and checking items at {1}",
+                    nameof(ProcessingService),
+                    DateTime.Now.ToString());
 
-                var loadItemsService =
-                    scope.ServiceProvider.GetRequiredService<ILoadItemsService>();
+                // Creating a new scope everytime ensures that memory leaks
+                // are cleaned up, such as the webdriver is a constant issue.
+                // This comes at a cost of increased start up time of each loop.
+                using var scope = serviceProvider.CreateScope();
 
-                var items = loadItemsService.LoadItems();
+                // Essentially turns the transient services into a scoped
+                var loadProductsService =
+                    scope.ServiceProvider.GetRequiredService<ILoadProductsService>();
+                var checkProductService =
+                    scope.ServiceProvider.GetRequiredService<ICheckProductService>();
 
-                if (items == null || items.Count == 0)
+                var products = loadProductsService.LoadProducts();
+
+                if (products == null || products.Count == 0)
                 {
-                    _logger.LogError(@"{0} incurred an error at {1}: The list of items to check is null or zero");
+                    logger.LogError(
+                        @"{0} incurred an error: The list of items to check is null or zero ",
+                        nameof(ProcessingService));
                     return Task.CompletedTask;
                 }
 
-                Parallel.ForEach(items, (item) =>
+                try
                 {
-                    var checkItemService =
-                    scope.ServiceProvider.GetRequiredService<ICheckItemService>();
-
-                    try
+                    cancellationToken.ThrowIfCancellationRequested();
+                    foreach (var product in products)
                     {
-                        checkItemService.CheckItem(item);
+                        checkProductService.CheckProduct(product);
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(@"{0} incurred an error at {1}: {2}", nameof(ProcessingService), DateTime.Now.ToString(), e.Message);
-                    }
-                });
+                }
+                catch (OperationCanceledException e)
+                {
+                    logger.LogError(
+                        @"{0} operation cancelled at {1}: {2}",
+                        nameof(ProcessingService),
+                        DateTime.Now.ToString(),
+                        e.Message);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(
+                        @"{0} incurred an error at {1}: {2}",
+                        nameof(ProcessingService),
+                        DateTime.Now.ToString(),
+                        e.Message);
+                }
             }
+
             return Task.CompletedTask;
         }
     }

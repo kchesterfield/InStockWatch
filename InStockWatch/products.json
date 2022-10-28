@@ -1,0 +1,28 @@
+{
+  "Products": [
+    {
+      "DisplayName": "NVIDIA - GeForce RTX 4090 24GB GDDR6X Graphics Card - Titanium and black",
+      "ProductUri": "https://www.bestbuy.com/site/nvidia-geforce-rtx-4090-24gb-gddr6x-graphics-card-titanium-and-black/6521430.p?skuId=6521430",
+      "AddToCartElement": "add-to-cart-button",
+      "SoldOutElementText": "Sold Out"
+    },
+    {
+      "DisplayName": "GIGABYTE - NVIDIA GeForce RTX 4090 24GB GDDR6X 384-bit Graphics Card with 3x WINDFORCE Fans (GV-N4090WF3-24GD) - Black",
+      "ProductUri": "https://www.bestbuy.com/site/gigabyte-nvidia-geforce-rtx-4090-24gb-gddr6x-384-bit-graphics-card-with-3x-windforce-fans-gv-n4090wf3-24gd-black/6521517.p?skuId=6521517",
+      "AddToCartElement": "add-to-cart-button",
+      "SoldOutElementText": "Sold Out"
+    },
+    {
+      "DisplayName": "GIGABYTE - NVIDIA GeForce RTX 4090 24GB GDDR6X 384-bit Graphics Card with 3x WINDFORCE Fans (GV-N4090GAMING OC-24GD) - Black",
+      "ProductUri": "https://www.bestbuy.com/site/gigabyte-nvidia-geforce-rtx-4090-24gb-gddr6x-384-bit-graphics-card-with-3x-windforce-fans-gv-n4090gaming-oc-24gd-black/6521518.p?skuId=6521518",
+      "AddToCartElement": "add-to-cart-button",
+      "SoldOutElementText": "Sold Out"
+    },
+    {
+      "DisplayName": "ASUS ROG NVIDIA GeForce RTX 4090 OC Edition Video Card (PCIe 4.0, 24GB GDDR6X, HDMI 2.1, DisplayPort 1.4a, GPU Tweak) ROG-STRIX-RTX4090-O24G-GAMING",
+      "ProductUri": "https://www.newegg.com/asus-geforce-rtx-4090-rog-strix-rtx4090-o24g-gaming/p/N82E16814126593?quicklink=true",
+      "AddToCartElement": "product-inventory",
+      "SoldOutElementText": "OUT OF STOCK."
+    }
+  ]
+}

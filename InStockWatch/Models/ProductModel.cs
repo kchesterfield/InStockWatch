@@ -2,13 +2,14 @@
 
 namespace InStockWatch.Models
 {
-    public class Item
+    public class Product
     {
         public string DisplayName { get; set; }
-        public Uri ItemUri { get; set; }
+        public Uri ProductUri { get; set; }
         public string AddToCartElement { get; set; }
         public string SoldOutElementText { get; set; }
 
+        // ToDo: Update to IValidatableObject
         public bool IsValid()
         {
             if (string.IsNullOrWhiteSpace(DisplayName)
@@ -18,7 +19,7 @@ namespace InStockWatch.Models
                 return false;
             }
 
-            if (ItemUri == null)
+            if (ProductUri == null)
             {
                 return false;
             }

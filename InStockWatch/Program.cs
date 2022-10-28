@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace InStockWatch
 {
-    class Program
+    public class Program
     {
-        static async Task Main()
+        public static async Task Main()
         {
-            IHost host = CreateHostBuilder().Build();
+            var host = CreateHostBuilder().Build();
 
             await host.RunAsync();
         }
 
-        private static IHostBuilder CreateHostBuilder() =>
-            Host.CreateDefaultBuilder()
+        private static IHostBuilder CreateHostBuilder() => Host
+            .CreateDefaultBuilder()
             .UseConsoleLifetime(opts =>
             {
                 opts.SuppressStatusMessages = true;
@@ -25,14 +25,23 @@ namespace InStockWatch
             .ConfigureHostConfiguration(configHost =>
             {
                 configHost.SetBasePath(Directory.GetCurrentDirectory());
-                configHost.AddJsonFile("items.json", optional: false, reloadOnChange: true);
+                configHost.AddJsonFile(
+                    "products.json",
+                    optional: false,
+                    reloadOnChange: true);
+                configHost.AddJsonFile(
+                    "appsettings.json",
+                    optional: false,
+                    reloadOnChange: true);
                 configHost.AddEnvironmentVariables();
+                configHost.AddUserSecrets<Program>();
             })
             .ConfigureServices(services =>
             {
-                services.AddSingleton<ILoadItemsService, LoadItemsService>();
-                services.AddTransient<ICheckItemService, CheckItemService>();
+                services.AddTransient<ILoadProductsService, LoadProductsService>();
+                services.AddTransient<ICheckProductService, CheckProductService>();
+                services.AddTransient<INotificationService, NotificationService>();
                 services.AddHostedService<ProcessingService>();
-            });     
+            });
     }
 }
